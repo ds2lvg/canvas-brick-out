@@ -4,8 +4,8 @@ let interval = setInterval(draw, 30);
 // 공
 let x = canvas.width / 2; // x좌표
 let y = canvas.height - 30; // y좌표
-let dx = 2;
-let dy = -2;
+let dx = 6;
+let dy = -6;
 let ballRadius = 10; // 공 반지름
 // 패들
 const paddileHeight = 10;
@@ -23,6 +23,8 @@ let brickPadding = 10;
 let brickOffsetTop = 30;
 let brickOffsetLeft = 30;
 const bricks = [];
+// 점수
+let score = 0;
 
 for (let c = 0; c < brickColumnCount; c++) {
   bricks[c] = [];
@@ -33,6 +35,7 @@ for (let c = 0; c < brickColumnCount; c++) {
 
 document.addEventListener("keydown", keyDownHandler);
 document.addEventListener("keyup", keyUpHandler);
+// document.addEventListener("mousemove", mouseMoveUpHandler);
 
 function keyDownHandler(e) {
   if (e.keyCode === 39) {
@@ -50,6 +53,14 @@ function keyUpHandler(e) {
   }
 }
 
+function mouseMoveUpHandler(e) {
+  const relativeX = e.clientX - canvas.offsetLeft;
+  if (relativeX > 0 && relativeX < canvas.width) {
+    paddleX = relativeX - paddleWidth / 2;
+  }
+}
+
+// draw되야 할 함수들
 function collisionDetection() {
   for (let c = 0; c < brickColumnCount; c++) {
     for (let r = 0; r < brickRowCount; r++) {
@@ -65,6 +76,12 @@ function collisionDetection() {
         ) {
           dy = -dy;
           b.status = 0;
+          score++;
+          if (score === brickRowCount * brickColumnCount) {
+            alert("승리!");
+            document.location.reload();
+            clearInterval(interval);
+          }
         }
       }
     }
@@ -105,12 +122,25 @@ function drawBricks() {
   }
 }
 
+function drawScore() {
+  ctx.font = "16px Arial";
+  ctx.fillStyle = "#0095DD";
+  ctx.fillText(`Score: ${score}`, 8, 20);
+}
+
+function drawLives() {
+  // ctx.font = "16px Arial";
+  // ctx.fillStyle = "#0095DD";
+  // ctx.fillText(`Score: ${score}`, 8, 20);
+}
+
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height); // 캔버스 내의 프레임 삭제
   drawBall();
   drawPaddle();
   drawBricks();
   collisionDetection();
+  drawScore();
 
   // 충돌감지해서 음수로 전환해서 역으로 좌표 전환
   if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
