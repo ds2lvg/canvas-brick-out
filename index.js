@@ -1,11 +1,11 @@
 const canvas = document.getElementById("myCanvas");
 const ctx = canvas.getContext("2d"); // 2D rendering context
-let interval = setInterval(draw, 30);
+const speed = Number(prompt("원하시는 단계를 숫자로 입력하세요.")) + 1;
 // 공
 let x = canvas.width / 2; // x좌표
 let y = canvas.height - 30; // y좌표
-let dx = 6;
-let dy = -6;
+let dx = speed;
+let dy = -1 * speed;
 let ballRadius = 10; // 공 반지름
 // 패들
 const paddileHeight = 10;
@@ -23,8 +23,9 @@ let brickPadding = 10;
 let brickOffsetTop = 30;
 let brickOffsetLeft = 30;
 const bricks = [];
-// 점수
+// 점수와 생명
 let score = 0;
+let lives = 3;
 
 for (let c = 0; c < brickColumnCount; c++) {
   bricks[c] = [];
@@ -80,7 +81,6 @@ function collisionDetection() {
           if (score === brickRowCount * brickColumnCount) {
             alert("승리!");
             document.location.reload();
-            clearInterval(interval);
           }
         }
       }
@@ -129,9 +129,9 @@ function drawScore() {
 }
 
 function drawLives() {
-  // ctx.font = "16px Arial";
-  // ctx.fillStyle = "#0095DD";
-  // ctx.fillText(`Score: ${score}`, 8, 20);
+  ctx.font = "16px Arial";
+  ctx.fillStyle = "#0095DD";
+  ctx.fillText(`Lives: ${lives}`, canvas.width - 65, 20);
 }
 
 function draw() {
@@ -141,6 +141,7 @@ function draw() {
   drawBricks();
   collisionDetection();
   drawScore();
+  drawLives();
 
   // 충돌감지해서 음수로 전환해서 역으로 좌표 전환
   if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
@@ -157,9 +158,17 @@ function draw() {
       // 공이 패들에 먼저 닿은 경우
       dy = -dy;
     } else {
-      alert("게임오버");
-      document.location.reload();
-      clearInterval(interval);
+      lives--;
+      if (!lives) {
+        alert("게임오버");
+        document.location.reload();
+      } else {
+        x = canvas.width / 2;
+        y = canvas.height - 30;
+        dx = speed;
+        dy = -1 * speed;
+        paddleX = (canvas.width - paddleWidth) / 2;
+      }
     }
   }
   // 패들 이동
@@ -171,4 +180,7 @@ function draw() {
 
   x += dx;
   y += dy;
+  requestAnimationFrame(draw);
 }
+
+draw();
