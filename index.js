@@ -25,7 +25,8 @@ let brickOffsetLeft = 30;
 const bricks = [];
 // 점수와 생명
 let score = 0;
-let lives = 3;
+let brickOutNum = 0;
+let lives = 1;
 
 for (let c = 0; c < brickColumnCount; c++) {
   bricks[c] = [];
@@ -77,8 +78,9 @@ function collisionDetection() {
         ) {
           dy = -dy;
           b.status = 0;
-          score++;
-          if (score === brickRowCount * brickColumnCount) {
+          score = score + speed;
+          brickOutNum++;
+          if (brickOutNum === brickRowCount * brickColumnCount) {
             alert("승리!");
             document.location.reload();
           }
@@ -135,6 +137,11 @@ function drawLives() {
 }
 
 function draw() {
+  if (speed < 2) {
+    alert("단계는 1이상 입력해야 합니다.");
+    document.location.reload();
+    return;
+  }
   ctx.clearRect(0, 0, canvas.width, canvas.height); // 캔버스 내의 프레임 삭제
   drawBall();
   drawPaddle();
